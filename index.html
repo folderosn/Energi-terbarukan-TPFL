@@ -8,43 +8,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     
-    <!-- Chosen Palette: Warm Neutrals (Latar belakang krem/gading, Teks gelap (slate), Aksen oranye/kuning lembut) -->
-    <!-- Application Structure Plan: Struktur aplikasi dirancang ulang dari dokumen linier menjadi Single Page Application (SPA) berbasis tab. Navigasi utama membagi konten menjadi empat area tugas utama guru: 'Ringkasan' (untuk gambaran umum & tujuan), 'Langkah Proyek' (untuk panduan pelaksanaan), 'Logistik' (untuk persiapan alat/bahan), dan 'Penilaian' (untuk kriteria evaluasi). 'Langkah Proyek' selanjutnya memiliki sub-navigasi interaktif untuk 4 fase, memungkinkan guru fokus pada satu fase pada satu waktu. Struktur ini dipilih karena alur kerja guru tidak linier; mereka perlu melompat antar bagian (misalnya, dari 'Langkah Fase 2' ke 'Logistik') dengan cepat. -->
-    <!-- Visualization & Content Choices: 1. Judul/Tujuan (Ringkasan) -> Goal: Inform -> HTML Lists. 2. Langkah-langkah (4 Fase) -> Goal: Organize -> Interactive Tabs (HTML/JS), menyembunyikan/menampilkan div konten fase. 3. Alat & Bahan (Logistik) -> Goal: Inform -> Two-column HTML lists. 4. Kriteria Penilaian (Penilaian) -> Goal: Compare/Inform -> Chart.js Doughnut Chart (Canvas) untuk visualisasi bobot persentase (25, 25, 30, 20) + Tabel HTML untuk rincian. Justifikasi: Bagan donat secara instan menyoroti 'Kualitas Produk' (30%) sebagai fokus penilaian terbesar, yang lebih mudah dicerna daripada tabel saja. Interaksi JS mengelola semua navigasi tab. -->
+    <!-- Chosen Palette: Energetic & Playful (#00A0B0, #6A4A3C, #CC333F, #EB6841, #EDC951) -->
+    <!-- Application Structure Plan: Infografis ini dirancang sebagai satu halaman vertikal (single-scroll) yang menceritakan 'kisah' proyek kepada siswa. Strukturnya mengikuti alur naratif: 1. Judul (Hook), 2. Misi (Why), 3. Tujuan (What), 4. Alur Proyek (How/Process), 5. Penilaian (Success), 6. Logistik (Tools). Struktur ini dipilih untuk membangun antusiasme dan memberikan gambaran yang jelas dari awal hingga akhir, yang lebih efektif untuk audiens siswa daripada struktur RPP aslinya. -->
+    <!-- Visualization & Content Choices: 1. Misi (Gagasan Utama) -> Goal: Organize -> Diagram Alur HTML/CSS (Flexbox) -> Menunjukkan transformasi 'Ide' menjadi 'Produk'. (NO SVG). 2. Tujuan -> Goal: Inform/Organize -> Daftar Ikon Unicode 2 Kolom -> Memisahkan IPAS vs Kejuruan. (NO SVG). 3. Alur Proyek (Langkah) -> Goal: Organize/Change -> Diagram Proses HTML/CSS 4-Langkah (Flexbox/Grid) -> Memvisualisasikan timeline proyek. (NO SVG, NO MERMAID). 4. Penilaian (Kriteria) -> Goal: Compare/Inform -> Chart.js Donut Chart (Canvas) -> Menunjukkan bobot persentase (25/25/30/20) dengan jelas. (NO SVG). 5. Alat/Bahan -> Goal: Inform -> Daftar Ikon Unicode -> Ringkasan logistik. (NO SVG). -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #FFFBEB; 
-        }
-        .nav-btn {
-            transition: all 0.3s ease;
-            @apply px-4 py-2 font-semibold rounded-t-lg text-amber-700 hover:bg-amber-100;
-        }
-        .nav-btn-active {
-            @apply bg-amber-500 text-white shadow-md;
-        }
-        .content-section {
-            display: none;
-        }
-        .content-section.active {
-            display: block;
-        }
-        .phase-btn {
-            transition: all 0.3s ease;
-            @apply px-4 py-3 font-semibold text-left text-slate-700 w-full rounded-lg hover:bg-amber-100;
-        }
-        .phase-btn-active {
-            @apply bg-amber-200 text-slate-900 ring-2 ring-amber-500;
-        }
-        .phase-tab {
-            display: none;
-        }
-        .phase-tab.active {
-            display: block;
+            background-color: #f8fafc;
         }
         .chart-container {
             position: relative;
@@ -55,361 +29,253 @@
             height: 350px;
             max-height: 400px;
         }
-        th {
-            @apply bg-slate-100 px-4 py-2 text-left text-sm font-semibold text-slate-700;
+        .flow-step {
+            @apply flex-1 p-6 bg-white shadow-lg rounded-lg text-center transition-transform duration-300 hover:scale-105;
         }
-        td {
-            @apply px-4 py-3 border-b border-slate-100 text-sm;
+        .flow-arrow {
+            @apply text-4xl font-bold text-gray-300 hidden md:flex items-center justify-center;
         }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-gray-800">
 
-    <div class="max-w-7xl mx-auto p-4 sm:p-8">
-        
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-amber-900">Proyek IPAS: Bengkel Las Hijau</h1>
-            <p class="text-lg text-slate-600 mt-2">Fabrikasi Kompor Surya Parabola untuk Energi Bersih</p>
-            <p class="text-sm text-slate-500 mt-1">Kelas X Teknik Pengelasan | SMKN 1 Gunung Tuleh</p>
+    <div class="container mx-auto p-6 sm:p-12 max-w-6xl">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-black text-[#00A0B0] uppercase tracking-wide">
+                Proyek: Bengkel Las Hijau
+            </h1>
+            <p class="text-xl md:text-2xl font-light text-gray-700 mt-3">
+                Fabrikasi Kompor Surya Parabola untuk Energi Bersih
+            </p>
         </header>
 
-        <nav id="main-nav" class="flex flex-wrap justify-center border-b-2 border-amber-300 mb-8">
-            <button class="nav-btn nav-btn-active" data-tab="ringkasan">Ringkasan Proyek</button>
-            <button class="nav-btn" data-tab="langkah">Langkah Proyek</button>
-            <button class="nav-btn" data-tab="logistik">Logistik</button>
-            <button class="nav-btn" data-tab="penilaian">Penilaian</button>
-        </nav>
+        <section class="bg-white rounded-lg shadow-xl p-8 mb-16 border-t-8 border-[#EB6841]">
+            <h2 class="text-3xl font-bold text-[#EB6841] mb-6 text-center">
+                Misi Kita: Dari Teori ke Aksi
+            </h2>
+            <p class="text-lg text-gray-700 text-center max-w-3xl mx-auto mb-10">
+                Kita tidak hanya belajar teori. Kita akan mengubah konsep fisika abstrak (energi cahaya, panas, dan titik fokus) menjadi produk logam yang nyata dan fungsional menggunakan keterampilan fabrikasi dan pengelasan.
+            </p>
+            
+            <div class="flex flex-col md:flex-row justify-around items-center space-y-4 md:space-y-0 md:space-x-4">
+                <div class="p-6 bg-yellow-50 rounded-lg shadow-md text-center">
+                    <span class="text-5xl">💡</span>
+                    <h3 class="text-lg font-bold text-yellow-800 mt-2">Energi Cahaya</h3>
+                </div>
+                <span class="text-5xl font-bold text-[#00A0B0] rotate-90 md:rotate-0">→</span>
+                <div class="p-6 bg-orange-50 rounded-lg shadow-md text-center">
+                    <span class="text-5xl">🔥</span>
+                    <h3 class="text-lg font-bold text-orange-800 mt-2">Titik Fokus Parabola</h3>
+                </div>
+                <span class="text-5xl font-bold text-[#00A0B0] rotate-90 md:rotate-0">→</span>
+                <div class="p-6 bg-red-50 rounded-lg shadow-md text-center">
+                    <span class="text-5xl">🍳</span>
+                    <h3 class="text-lg font-bold text-red-800 mt-2">Kompor Surya Fungsional</h3>
+                </div>
+            </div>
+        </section>
 
-        <main id="content-container">
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-10">
+                Target Pembelajaran
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-8 transform hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-2xl font-bold text-[#00A0B0] mb-5">
+                        🔬 Aspek IPAS (Sains)
+                    </h3>
+                    <ul class="list-disc list-outside pl-5 space-y-3 text-gray-700 text-lg">
+                        <li>Mengidentifikasi matahari sebagai energi terbarukan.</li>
+                        <li>Menjelaskan perubahan energi (cahaya menjadi panas).</li>
+                        <li>Menganalisis prinsip titik fokus cermin parabola.</li>
+                        <li>Menghubungkan energi bersih dengan kebutuhan industri.</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-8 transform hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-2xl font-bold text-[#00A0B0] mb-5">
+                        🛠️ Aspek Kejuruan (Teknik)
+                    </h3>
+                    <ul class="list-disc list-outside pl-5 space-y-3 text-gray-700 text-lg">
+                        <li>Menerapkan fabrikasi logam (ukur, potong, bengkok).</li>
+                        <li>Melaksanakan pengelasan dasar (las titik & sambung).</li>
+                        <li>Membaca gambar kerja (blueprint) sederhana.</li>
+                        <li>Bekerja dalam tim dengan mengutamakan K3.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-            <section id="ringkasan" class="content-section active space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-amber-200">
-                    <h2 class="text-2xl font-semibold text-amber-800 mb-3">Gagasan Utama Proyek</h2>
-                    <p class="text-slate-700 leading-relaxed">
-                        Selamat datang di dasbor Proyek IPAS "Bengkel Las Hijau". Bagian ini memberikan gambaran umum tentang proyek. Tujuannya adalah untuk mengubah konsep fisika abstrak (energi cahaya, panas, titik fokus) menjadi produk logam yang nyata dan fungsional. Siswa tidak hanya belajar teori, tetapi secara langsung menggunakan keterampilan dasar fabrikasi dan pengelasan mereka untuk menciptakan alat yang memanfaatkan energi terbarukan.
-                    </p>
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-12">
+                4 Fase Proyek Kita
+            </h2>
+            <div class="flex flex-col md:flex-row items-stretch space-y-8 md:space-y-0 md:space-x-4">
+                <div class="flow-step border-t-8 border-[#EDC951]">
+                    <span class="text-5xl">1️⃣</span>
+                    <h4 class="text-xl font-bold mt-4 mb-2 text-yellow-700">Fase 1: Perencanaan</h4>
+                    <p class="text-gray-600">Diskusi konsep, studi prinsip fisika, dan merancang rencana kerja berdasarkan blueprint.</p>
                 </div>
                 
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-amber-200">
-                    <h2 class="text-2xl font-semibold text-amber-800 mb-4">Tujuan Pembelajaran</h2>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center">
-                                <span class="text-xl mr-2">🔬</span> Aspek IPAS (Pengetahuan & Kritis)
-                            </h3>
-                            <ul class="list-disc list-outside pl-5 space-y-2 text-slate-600">
-                                <li>Mengidentifikasi matahari sebagai sumber energi terbarukan yang potensial.</li>
-                                <li>Menjelaskan konsep perubahan energi (energi cahaya menjadi energi panas).</li>
-                                <li>Menganalisis prinsip dasar pemusatan energi panas menggunakan cermin parabola (titik fokus).</li>
-                                <li>Menghubungkan pentingnya energi bersih dengan isu lingkungan dan kebutuhan energi di dunia industri.</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center">
-                                <span class="text-xl mr-2">🛠️</span> Aspek Kejuruan (Keterampilan & Sikap)
-                            </h3>
-                            <ul class="list-disc list-outside pl-5 space-y-2 text-slate-600">
-                                <li>Menerapkan teknik dasar fabrikasi logam (mengukur, memotong, membengkok) sesuai prosedur.</li>
-                                <li>Melaksanakan proses pengelasan dasar (las titik/tack weld dan las sambung).</li>
-                                <li>Membaca dan menginterpretasikan gambar kerja (blueprint) sederhana.</li>
-                                <li>Bekerja sama dalam tim dengan mengutamakan Keselamatan dan Kesehatan Kerja (K3) di bengkel.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                <div class="flow-arrow">→</div>
 
-            <section id="langkah" class="content-section space-y-6">
-                 <div class="bg-white p-6 rounded-xl shadow-sm border border-amber-200">
-                    <h2 class="text-2xl font-semibold text-amber-800 mb-3">Langkah-langkah Kegiatan Proyek</h2>
-                    <p class="text-slate-700 leading-relaxed mb-4">
-                        Bagian ini memecah proyek menjadi empat fase yang dapat dikelola, dari teori hingga presentasi. Gunakan tombol navigasi di bawah untuk beralih antara setiap fase. Proyek ini dirancang untuk sekitar 16-20 Jam Pelajaran (JP).
-                    </p>
-                    
-                    <div class="grid md:grid-cols-4 gap-6">
-                        <nav id="phase-nav" class="md:col-span-1 flex flex-col space-y-2">
-                            <button class="phase-btn phase-btn-active" data-phase="fase1">Fase 1: Eksplorasi & Perencanaan</button>
-                            <button class="phase-btn" data-phase="fase2">Fase 2: Aksi & Fabrikasi</button>
-                            <button class="phase-btn" data-phase="fase3">Fase 3: Uji Coba & Analisis</button>
-                            <button class="phase-btn" data-phase="fase4">Fase 4: Refleksi & Presentasi</button>
-                        </nav>
-                        
-                        <div id="phase-content" class="md:col-span-3 bg-amber-50 p-6 rounded-lg border border-amber-200 min-h-[300px]">
-                            
-                            <div id="fase1" class="phase-tab active space-y-4">
-                                <h3 class="text-xl font-semibold text-slate-800">Fase 1: Eksplorasi & Perencanaan (Teori & Desain)</h3>
-                                <ol class="list-decimal list-outside pl-5 space-y-3 text-slate-700">
-                                    <li>
-                                        <strong>Diskusi Kontekstual:</strong> Mulai dengan pertanyaan pemantik (misal: "Berapa banyak listrik yang digunakan mesin las kita?"). Bahas krisis energi, polusi, dan peran industri pengelasan. Perkenalkan konsep Energi Terbarukan.
-                                        <br><span class="text-sm font-semibold text-amber-700">Koneksi Industri:</span> Tunjukkan gambar fabrikasi tower turbin angin atau rangka panel surya.
-                                    </li>
-                                    <li>
-                                        <strong>Studi Konsep:</strong> Jelaskan prinsip kompor surya parabola (titik fokus), konversi energi (Cahaya -> Panas), dan perpindahan panas.
-                                    </li>
-                                    <li>
-                                        <strong>Perencanaan Proyek:</strong> Bagi siswa menjadi kelompok. Berikan gambar kerja (blueprint). Kelompok mempelajari gambar, membuat daftar bahan, membagi tugas, dan menyusun rencana kerja.
-                                    </li>
-                                </ol>
-                            </div>
-                            
-                            <div id="fase2" class="phase-tab space-y-4">
-                                <h3 class="text-xl font-semibold text-slate-800">Fase 2: Aksi & Fabrikasi (Praktik di Bengkel)</h3>
-                                <ol class="list-decimal list-outside pl-5 space-y-3 text-slate-700">
-                                    <li><strong>Safety Briefing (K3):</strong> Wajib me-refresh prosedur K3 di bengkel sebelum bekerja.</li>
-                                    <li><strong>Persiapan Bahan:</strong> Kelompok mengambil bahan dan alat sesuai rencana.</li>
-                                    <li>
-                                        <strong>Proses Fabrikasi:</strong>
-                                        <ul class="list-disc list-outside pl-5 mt-2">
-                                            <li>Pengukuran dan penandaan (marking).</li>
-                                            <li>Pemotongan (cutting) dan pembengkokan (bending) besi untuk rangka parabola.</li>
-                                            <li>Merakit rangka dan dudukan (stand).</li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <strong>Proses Pengelasan:</strong>
-                                        <ul class="list-disc list-outside pl-5 mt-2">
-                                            <li>Melakukan las titik (tack weld) untuk menyatukan komponen.</li>
-                                            <li>Setelah presisi, lakukan pengelasan penuh (full weld).</li>
-                                            <li>Membuat dudukan panci/ketel tepat di titik fokus.</li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <strong>Finishing:</strong> Membersihkan terak las, menggerinda, dan memasang bahan reflektif (misal: aluminium foil).
-                                    </li>
-                                </ol>
-                            </div>
-                            
-                            <div id="fase3" class="phase-tab space-y-4">
-                                <h3 class="text-xl font-semibold text-slate-800">Fase 3: Uji Coba & Analisis (Pembuktian Ilmiah)</h3>
-                                <ol class="list-decimal list-outside pl-5 space-y-3 text-slate-700">
-                                    <li>
-                                        <strong>Pengujian Produk:</strong> Bawa kompor surya ke area terbuka. Arahkan parabola tegak lurus ke matahari.
-                                        <br><span class="text-sm font-semibold text-amber-700">Tugas:</span> Uji coba memasak sesuatu (misal: merebus air, memasak telur).
-                                    </li>
-                                    <li>
-                                        <strong>Analisis & Pemecahan Masalah:</strong>
-                                        <ul class="list-disc list-outside pl-5 mt-2">
-                                            <li>Catat data: Waktu untuk mendidih? Suhu titik fokus?</li>
-                                            <li>Diskusi: Jika gagal, apa penyebabnya? (Titik fokus tidak tepat? Reflektor buruk? Cuaca?)</li>
-                                        </ul>
-                                    </li>
-                                </ol>
-                            </div>
-                            
-                            <div id="fase4" class="phase-tab space-y-4">
-                                <h3 class="text-xl font-semibold text-slate-800">Fase 4: Refleksi & Presentasi (Kesimpulan)</h3>
-                                <ol class="list-decimal list-outside pl-5 space-y-3 text-slate-700">
-                                    <li>
-                                        <strong>Presentasi Kelompok:</strong> Setiap kelompok mempresentasikan hasil karya, menjelaskan:
-                                        <ul class="list-disc list-outside pl-5 mt-2">
-                                            <li>Proses fabrikasi (kesulitan & solusi).</li>
-                                            <li>Cara kerja kompor (konsep IPAS).</li>
-                                            <li>Hasil uji coba (data dan analisis).</li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <strong>Refleksi:</strong> Diskusi kelas (misal: "Apa yang dipelajari tentang energi surya?").
-                                        <br><span class="text-sm font-semibold text-amber-700">Penguatan:</span> Guru menutup dengan penguatan bahwa *welder* adalah "fabrikator" yang bisa membangun masa depan energi hijau.
-                                    </li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
+                <div class="flow-step border-t-8 border-[#EB6841]">
+                    <span class="text-5xl">2️⃣</span>
+                    <h4 class="text-xl font-bold mt-4 mb-2 text-orange-700">Fase 2: Fabrikasi</h4>
+                    <p class="text-gray-600">Masuk bengkel! Mengukur, memotong, membengkok, dan merakit rangka menggunakan teknik las.</p>
                 </div>
-            </section>
 
-            <section id="logistik" class="content-section space-y-6">
-                 <div class="bg-white p-6 rounded-xl shadow-sm border border-amber-200">
-                    <h2 class="text-2xl font-semibold text-amber-800 mb-3">Logistik Proyek (Per Kelompok)</h2>
-                    <p class="text-slate-700 leading-relaxed mb-6">
-                        Bagian ini merinci semua peralatan dan bahan habis pakai yang diperlukan untuk setiap kelompok agar berhasil menyelesaikan proyek fabrikasi. Pastikan semua alat K3 diperiksa sebelum memulai.
-                    </p>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        
-                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
-                            <h3 class="text-lg font-semibold text-slate-700 mb-3">Alat (Peralatan Bengkel Las)</h3>
-                            <ul class="list-disc list-outside pl-5 space-y-2 text-slate-600">
-                                <li>1 unit Mesin Las (SMAW/GMAW)</li>
-                                <li>Alat Keselamatan Diri (Helm las, sarung tangan, apron, kacamata safety)</li>
-                                <li>Gerinda tangan (plus mata gerinda potong & poles)</li>
-                                <li>Ragum (Bench Vise)</li>
-                                <li>Palu besi dan Palu terak</li>
-                                <li>Sikat kawat</li>
-                                <li>Alat ukur (Meteran, penggaris siku)</li>
-                                <li>Alat penanda (Kapur besi/spidol)</li>
-                                <li>Klem (C-Clamps)</li>
-                                <li>Alat pembengkok besi (opsional, bisa manual)</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
-                            <h3 class="text-lg font-semibold text-slate-700 mb-3">Bahan (Bahan Habis Pakai)</h3>
-                            <ul class="list-disc list-outside pl-5 space-y-2 text-slate-600">
-                                <li>Besi strip atau besi behel (sesuai desain, misal 2-3 batang)</li>
-                                <li>Plat besi tipis (untuk dudukan dan sambungan)</li>
-                                <li>Elektroda las (misal: E6013 diameter 2.0mm atau 2.6mm)</li>
-                                <li>Bahan reflektif (Aluminium foil tebal, stiker mirror, plat seng)</li>
-                                <li>Baut dan mur (jika desain menggunakan sambungan baut)</li>
-                                <li>Panci/ketel kecil (warna hitam/gelap) untuk pengujian</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                <div class="flow-arrow">→</div>
 
-            <section id="penilaian" class="content-section space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-amber-200">
-                    <h2 class="text-2xl font-semibold text-amber-800 mb-3">Kriteria Penilaian Proyek</h2>
-                    <p class="text-slate-700 leading-relaxed mb-6">
-                        Penilaian proyek bersifat holistik dan mencakup empat aspek utama. Bagan di bawah menunjukkan pembobotan setiap aspek, dengan fokus terbesar pada kualitas produk fabrikasi dan las.
-                    </p>
-                    
-                    <div class="grid lg:grid-cols-2 gap-8 items-start">
-                        <div class="chart-container">
-                            <canvas id="assessmentChart"></canvas>
-                        </div>
-                        
-                        <div class="overflow-x-auto">
-                            <div class="shadow-md rounded-lg overflow-hidden border border-slate-200">
-                                <table class="w-full">
-                                    <caption class="text-lg font-semibold text-slate-700 mb-3 text-left sr-only">Tabel Kriteria Penilaian</caption>
-                                    <thead>
-                                        <tr>
-                                            <th class="w-[5%]">No.</th>
-                                            <th class="w-[40%]">Aspek Penilaian</th>
-                                            <th class="w-[45%]">Kriteria</th>
-                                            <th class="w-[10%]">Bobot</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white">
-                                        <tr>
-                                            <td class="text-center">1.</td>
-                                            <td class="font-semibold text-slate-700">Perencanaan & Sikap Kerja</td>
-                                            <td>Kelengkapan rencana kerja, kerjasama tim, penerapan K3 secara konsisten.</td>
-                                            <td class="text-center font-semibold">25%</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">2.</td>
-                                            <td class="font-semibold text-slate-700">Proses Fabrikasi</td>
-                                            <td>Keterampilan mengukur, memotong, membengkok, merakit. Efisiensi bahan.</td>
-                                            <td class="text-center font-semibold">25%</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">3.</td>
-                                            <td class="font-semibold text-slate-700">Kualitas Produk (Hasil Las)</td>
-                                            <td>Kerapian hasil las, kesesuaian dengan gambar kerja (presisi), kekuatan konstruksi.</td>
-                                            <td class="text-center font-semibold">30%</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">4.</td>
-                                            <td class="font-semibold text-slate-700">Pemahaman Konsep IPAS</td>
-                                            <td>Kemampuan menjelaskan prinsip kerja (energi, titik fokus) & analisis uji coba.</td>
-                                            <td class="text-center font-semibold">20%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="flow-step border-t-8 border-[#CC333F]">
+                    <span class="text-5xl">3️⃣</span>
+                    <h4 class="text-xl font-bold mt-4 mb-2 text-red-700">Fase 3: Uji Coba</h4>
+                    <p class="text-gray-600">Membuktikan sains! Menguji kompor di bawah sinar matahari dan menganalisis kinerjanya.</p>
+                </div>
+
+                <div class="flow-arrow">→</div>
+
+                <div class="flow-step border-t-8 border-[#00A0B0]">
+                    <span class="text-5xl">4️⃣</span>
+                    <h4 class="text-xl font-bold mt-4 mb-2 text-blue-700">Fase 4: Presentasi</h4>
+                    <p class="text-gray-600">Menunjukkan hasil karya, menjelaskan proses, dan merefleksikan apa yang telah kita pelajari.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-12">
+                Kunci Sukses Proyek (Penilaian)
+            </h2>
+            <div class="bg-white rounded-lg shadow-xl p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container">
+                        <canvas id="assessmentChart"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                            Apa yang Dinilai?
+                        </h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-center">
+                                <span class="w-4 h-4 rounded-full bg-[#CC333F] mr-3"></span>
+                                <span class="text-lg font-bold text-gray-700">30% - Kualitas Produk (Hasil Las & Fabrikasi)</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="w-4 h-4 rounded-full bg-[#EB6841] mr-3"></span>
+                                <span class="text-lg font-semibold text-gray-700">25% - Proses Fabrikasi</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="w-4 h-4 rounded-full bg-[#EDC951] mr-3"></span>
+                                <span class="text-lg font-semibold text-gray-700">25% - Perencanaan & Sikap Kerja (K3)</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="w-4 h-4 rounded-full bg-[#00A0B0] mr-3"></span>
+                                <span class="text-lg font-semibold text-gray-700">20% - Pemahaman Konsep IPAS & Analisis</span>
+                            </li>
+                        </ul>
+                        <p class="mt-6 text-gray-600 italic">
+                            Fokus utama kita adalah menghasilkan produk yang berkualitas dan presisi, sambil memahami ilmu di baliknya!
+                        </p>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-10">
+                Peralatan Kita
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-700 mb-5">
+                        🔧 Alat Bengkel
+                    </h3>
+                    <ul class="list-disc list-outside pl-5 space-y-2 text-gray-700">
+                        <li>Mesin Las (SMAW/GMAW)</li>
+                        <li>Alat Keselamatan Diri (Helm, Sarung Tangan, Apron)</li>
+                        <li>Gerinda Tangan (Potong & Poles)</li>
+                        <li>Ragum, Palu, Sikat Kawat</li>
+                        <li>Alat Ukur & Penanda</li>
+                        <li>Klem dan Alat Pembengkok</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-700 mb-5">
+                        🔩 Bahan Habis Pakai
+                    </h3>
+                    <ul class="list-disc list-outside pl-5 space-y-2 text-gray-700">
+                        <li>Besi Strip atau Behel</li>
+                        <li>Plat Besi Tipis</li>
+                        <li>Elektroda Las (E6013)</li>
+                        <li>Bahan Reflektif (Aluminium Foil/Stiker)</li>
+                        <li>Baut dan Mur (jika perlu)</li>
+                        <li>Panci Hitam (untuk uji coba)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center mt-16 pt-8 border-t border-gray-300">
+            <p class="text-xl font-bold text-[#00A0B0]">
+                Siap Membangun Solusi Energi Bersih?
+            </p>
+            <p class="text-gray-600 mt-2">
+                Proyek IPAS Kelas X Teknik Pengelasan - SMKN 1 Gunung Tuleh
+            </p>
+        </footer>
+
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
-            const mainNavButtons = document.querySelectorAll('#main-nav .nav-btn');
-            const contentSections = document.querySelectorAll('#content-container .content-section');
-            
-            mainNavButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const tab = button.getAttribute('data-tab');
-                    
-                    mainNavButtons.forEach(btn => btn.classList.remove('nav-btn-active'));
-                    button.classList.add('nav-btn-active');
-                    
-                    contentSections.forEach(section => {
-                        if (section.id === tab) {
-                            section.classList.add('active');
-                        } else {
-                            section.classList.remove('active');
-                        }
-                    });
-                });
-            });
-
-            const phaseNavButtons = document.querySelectorAll('#phase-nav .phase-btn');
-            const phaseTabs = document.querySelectorAll('#phase-content .phase-tab');
-
-            phaseNavButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const phase = button.getAttribute('data-phase');
-                    
-                    phaseNavButtons.forEach(btn => btn.classList.remove('phase-btn-active'));
-                    button.classList.add('phase-btn-active');
-                    
-                    phaseTabs.forEach(tab => {
-                        if (tab.id === phase) {
-                            tab.classList.add('active');
-                        } else {
-                            tab.classList.remove('active');
-                        }
-                    });
-                });
-            });
-
             const ctx = document.getElementById('assessmentChart');
             if (ctx) {
                 new Chart(ctx, {
                     type: 'doughnut',
                     data: {
                         labels: [
-                            'Perencanaan & Sikap Kerja (25%)',
-                            'Proses Fabrikasi (25%)',
-                            'Kualitas Produk (Hasil Las) (30%)',
-                            'Pemahaman Konsep IPAS (20%)'
+                            'Kualitas Produk (Hasil Las & Fabrikasi)',
+                            'Proses Fabrikasi',
+                            'Perencanaan & Sikap Kerja (K3)',
+                            'Pemahaman Konsep IPAS & Analisis'
                         ],
                         datasets: [{
                             label: 'Bobot Penilaian',
-                            data: [25, 25, 30, 20],
+                            data: [30, 25, 25, 20],
                             backgroundColor: [
-                                'rgba(251, 191, 36, 0.8)', 
-                                'rgba(245, 158, 11, 0.8)', 
-                                'rgba(217, 119, 6, 0.8)',  
-                                'rgba(180, 83, 9, 0.8)'   
+                                '#CC333F', 
+                                '#EB6841', 
+                                '#EDC951', 
+                                '#00A0B0'  
                             ],
-                            borderColor: [
-                                'rgba(251, 191, 36, 1)',
-                                'rgba(245, 158, 11, 1)',
-                                'rgba(217, 119, 6, 1)',
-                                'rgba(180, 83, 9, 1)'
-                            ],
-                            borderWidth: 1
+                            borderColor: '#ffffff',
+                            borderWidth: 4
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        cutout: '60%',
                         plugins: {
                             legend: {
-                                position: 'bottom',
-                                labels: {
-                                    boxWidth: 20,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
+                                display: false
                             },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) {
-                                            label = label.split('(')[0].trim();
+                                    title: function(tooltipItems) {
+                                        const item = tooltipItems[0];
+                                        let label = item.chart.data.labels[item.dataIndex];
+                                        if (Array.isArray(label)) {
+                                          return label.join(' ');
+                                        } else {
+                                          return label;
                                         }
+                                    },
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
                                         if (context.parsed !== null) {
-                                            label += ': ' + context.parsed + '%';
+                                            label = ' Bobot: ' + context.parsed + '%';
                                         }
                                         return label;
                                     }
